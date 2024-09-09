@@ -22,7 +22,7 @@ public class Warrior : ModuleRules
 			"AIModule"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "AnimGraphRuntime" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
