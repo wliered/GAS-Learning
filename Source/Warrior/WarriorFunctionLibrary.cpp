@@ -3,6 +3,7 @@
 
 #include "WarriorFunctionLibrary.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "GenericTeamAgentInterface.h"
 #include "GAS/AbilitySystemComponents/WarriorAbilitySystemComponent.h"
 #include "Interfaces/PawnCombatInterface.h"
 
@@ -61,5 +62,21 @@ UPawnCombatComponent* UWarriorFunctionLibrary::BP_GetPawnCombatComponentFromActo
 	OutValidType = CombatComponent? EWarriorValidType::Valid : EWarriorValidType::Invalid;
 
 	return CombatComponent;
+}
+
+bool UWarriorFunctionLibrary::IsTargetPawnHostile(APawn* QueryPawn, APawn* TargetPawn)
+{
+	check(QueryPawn && TargetPawn);
+	
+	IGenericTeamAgentInterface* QueryTeamAgent = Cast<IGenericTeamAgentInterface>(QueryPawn->GetController());
+	IGenericTeamAgentInterface* TargetTeamAgent = Cast<IGenericTeamAgentInterface>(TargetPawn->GetController());
+
+	if (QueryTeamAgent && TargetTeamAgent)
+	{
+		//because all NPCs of different teams are hostile to one another, this will be enough
+		return QueryTeamAgent->GetGenericTeamId() != TargetTeamAgent->GetGenericTeamId(); 
+	}
+	
+	return false;
 }
 
