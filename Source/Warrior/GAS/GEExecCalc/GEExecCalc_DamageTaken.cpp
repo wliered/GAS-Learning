@@ -57,7 +57,7 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 
 	float SourceAttackPower = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetWarriorDamageCapture().AttackPowerDef, EvaluateParameters, SourceAttackPower); //SourceAttackPower now contains the actual value of the actor's attribute, since it is an OutParam
-	//Debug::Print(TEXT("SourceAttackPower"), SourceAttackPower);
+	Debug::Print(TEXT("SourceAttackPower"), SourceAttackPower);
 	
 	float BaseDamage = 0.f;
 	int32 UsedLightAttackComboCount = 0;
