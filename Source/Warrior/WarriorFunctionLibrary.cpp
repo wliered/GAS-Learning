@@ -126,8 +126,8 @@ bool UWarriorFunctionLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefende
 
 	const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InDefender->GetActorForwardVector());
 
-	const FString DebugString = FString::Printf(TEXT("Dot Result: %f %s"), DotResult, DotResult<0.f? TEXT("Valid Block") : TEXT("Invalid Block"));
-	Debug::Print(DebugString);
+	// const FString DebugString = FString::Printf(TEXT("Dot Result: %f %s"), DotResult, DotResult<0.f? TEXT("Valid Block") : TEXT("Invalid Block"));
+	// Debug::Print(DebugString);
 	return DotResult < 0.f;
 	
 }

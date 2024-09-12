@@ -33,9 +33,9 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 	EventData.Instigator = GetOwningPawn();
 	EventData.Target = HitActor;
 	
-	if (bIsValidBlock)
+	if (bIsValidBlock)	
 	{
-		//TODO: handle successful block
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitActor, WarriorGameplayTags::Player_Event_SuccessfulBlock, EventData);
 	}
 	else
 	{
