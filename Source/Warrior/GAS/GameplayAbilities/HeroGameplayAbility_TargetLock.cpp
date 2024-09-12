@@ -3,10 +3,13 @@
 
 #include "HeroGameplayAbility_TargetLock.h"
 
+#include "Warrior/Controllers/WarriorHeroController.h"
+
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Warrior/WarriorDebugHelper.h"
 #include "Warrior/Characters/WarriorHeroCharacter.h"
+#include "Warrior/Widgets/WarriorWidgeBase.h"
 
 void UHeroGameplayAbility_TargetLock::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -80,6 +83,22 @@ AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(con
 {
 	float ClosestDistance = 0.f;
 	return UGameplayStatics::FindNearestActor(GetHeroCharacterFromActorInfo()->GetActorLocation(), InAvailableActors, ClosestDistance);
+}
+
+void UHeroGameplayAbility_TargetLock::DrawTargetLockWidget()
+{
+	if (!DrawnTargetLockWidget)
+	{
+		checkf(TargetLockWidgetClass, TEXT("Forgot to assign a valid class in TargetLock WidgetClass"));
+        
+		DrawnTargetLockWidget = CreateWidget<UWarriorWidgeBase>(GetHeroControllerFromActorInfo(), TargetLockWidgetClass);
+        
+		check(DrawnTargetLockWidget);
+        
+		DrawnTargetLockWidget->AddToViewport();
+	}
+	
+	
 }
 
 void UHeroGameplayAbility_TargetLock::CancelTargetLockAbility()

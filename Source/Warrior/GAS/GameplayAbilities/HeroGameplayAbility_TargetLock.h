@@ -6,6 +6,7 @@
 #include "WarriorHeroGameplayAbility.h"
 #include "HeroGameplayAbility_TargetLock.generated.h"
 
+class UWarriorWidgeBase;
 /**
  * 
  */
@@ -24,6 +25,7 @@ private:
 	void TryLockOnTarget();
 	void GetAvailableActorsToLock();
 	AActor* GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors);
+	void DrawTargetLockWidget();
 
 	void CancelTargetLockAbility();
 	void CleanUp();
@@ -36,8 +38,12 @@ private:
 	TArray<TEnumAsByte<EObjectTypeQuery> > BoxTraceChannel;
 	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
 	bool bShowPersistentDebugShape = false;
+	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
+	TSubclassOf<UWarriorWidgeBase> TargetLockWidgetClass; //creates a hard reference of a widget, but this one is simple, small, and frequently used so it is justifiable
 	UPROPERTY()
 	TArray<AActor*> AvailableActorsToTarget;
 	UPROPERTY()
 	AActor* CurrentLockedActor;
+	UPROPERTY()
+	UWarriorWidgeBase* DrawnTargetLockWidget;
 };
