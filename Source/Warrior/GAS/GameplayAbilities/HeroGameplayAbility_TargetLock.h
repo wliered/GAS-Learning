@@ -45,6 +45,9 @@ private:
 	bool bShowPersistentDebugShape = false;
 	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
 	TSubclassOf<UWarriorWidgeBase> TargetLockWidgetClass; //creates a hard reference of a widget, but this one is simple, small, and frequently used so it is justifiable
+	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
+	float TargetLockRotationInterpSpeed = 5.f;
+
 	UPROPERTY()
 	TArray<AActor*> AvailableActorsToTarget;
 	UPROPERTY()
