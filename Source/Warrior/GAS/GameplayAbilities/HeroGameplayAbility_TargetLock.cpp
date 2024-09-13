@@ -3,6 +3,9 @@
 
 #include "HeroGameplayAbility_TargetLock.h"
 
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Blueprint/WidgetTree.h"
+#include "Components/SizeBox.h"
 #include "Warrior/Controllers/WarriorHeroController.h"
 
 #include "Kismet/GameplayStatics.h"
@@ -39,7 +42,9 @@ void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 
 	if (CurrentLockedActor)
 	{
-		Debug::Print(CurrentLockedActor->GetActorNameOrLabel());
+		DrawTargetLockWidget();
+		SetTargetLockWidgetPoistion();
+		// Debug::Print(CurrentLockedActor->GetActorNameOrLabel());
 	}
 	else
 	{
@@ -73,7 +78,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 			if (HitActor != GetHeroCharacterFromActorInfo())
 			{
 				AvailableActorsToTarget.AddUnique(HitActor);
-				Debug::Print(HitActor->GetActorNameOrLabel());
+				// Debug::Print(HitActor->GetActorNameOrLabel());
 			}
 		}
 	}
@@ -97,8 +102,41 @@ void UHeroGameplayAbility_TargetLock::DrawTargetLockWidget()
         
 		DrawnTargetLockWidget->AddToViewport();
 	}
+}
+
+void UHeroGameplayAbility_TargetLock::SetTargetLockWidgetPoistion()
+{
+	if (!DrawnTargetLockWidget || !CurrentLockedActor)
+	{
+		CancelTargetLockAbility();
+		return;
+	}
+
+	FVector2D ScreenPosition;
+	UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(
+		GetHeroControllerFromActorInfo(),
+		CurrentLockedActor->GetActorLocation(),
+		ScreenPosition,
+		true
+		);
+	if (TargetLockWidgetSize == FVector2D::ZeroVector)
+	{
+		DrawnTargetLockWidget->WidgetTree->ForEachWidget(
+		[this](UWidget* FoundWidget)
+			{
+				if (USizeBox* FoundSizeBox = Cast<USizeBox>(FoundWidget))
+				{
+					TargetLockWidgetSize.X = FoundSizeBox->GetWidthOverride();
+					TargetLockWidgetSize.Y = FoundSizeBox->GetHeightOverride();
+				}
+			
+			}
+		);
+	}
+
+	ScreenPosition -= (TargetLockWidgetSize / 2.f);
 	
-	
+	DrawnTargetLockWidget->SetPositionInViewport(ScreenPosition, false);	
 }
 
 void UHeroGameplayAbility_TargetLock::CancelTargetLockAbility()
@@ -111,4 +149,9 @@ void UHeroGameplayAbility_TargetLock::CleanUp()
 	AvailableActorsToTarget.Empty();
 
 	CurrentLockedActor = nullptr;
+
+	if (DrawnTargetLockWidget)
+	{
+		DrawnTargetLockWidget->RemoveFromParent();
+	}
 }
