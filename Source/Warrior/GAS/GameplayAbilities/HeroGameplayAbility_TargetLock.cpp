@@ -3,9 +3,11 @@
 
 #include "HeroGameplayAbility_TargetLock.h"
 
+#include "EnhancedInputSubsystems.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/SizeBox.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Warrior/Controllers/WarriorHeroController.h"
 
 #include "Kismet/GameplayStatics.h"
@@ -22,6 +24,8 @@ void UHeroGameplayAbility_TargetLock::ActivateAbility(const FGameplayAbilitySpec
                                                       const FGameplayEventData* TriggerEventData)
 {
 	TryLockOnTarget();
+	InitTargetLockMovement();
+	InitTargetLockMappingContext();
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
@@ -29,6 +33,8 @@ void UHeroGameplayAbility_TargetLock::EndAbility(const FGameplayAbilitySpecHandl
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
+	ResetTargetLockMovement();
+	ResetTargetLockMappingContext();
 	CleanUp();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -175,6 +181,44 @@ void UHeroGameplayAbility_TargetLock::SetTargetLockWidgetPoistion()
 	DrawnTargetLockWidget->SetPositionInViewport(ScreenPosition, false);	
 }
 
+void UHeroGameplayAbility_TargetLock::InitTargetLockMovement()
+{
+	CachedDefaultMaxWalkSpeed = GetHeroCharacterFromActorInfo()->GetCharacterMovement()->MaxWalkSpeed;
+	GetHeroCharacterFromActorInfo()->GetCharacterMovement()->MaxWalkSpeed = TargetLockMaxWalkSpeed;
+}
+
+void UHeroGameplayAbility_TargetLock::InitTargetLockMappingContext()
+{
+	const ULocalPlayer* LocalPlayer = GetHeroControllerFromActorInfo()->GetLocalPlayer();
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+
+	check(Subsystem);
+
+	Subsystem->AddMappingContext(TargetLockMappingContext, 3);
+}
+
+void UHeroGameplayAbility_TargetLock::ResetTargetLockMappingContext()
+{
+	if (!GetHeroControllerFromActorInfo())
+	{
+		return;
+	}
+	const ULocalPlayer* LocalPlayer = GetHeroControllerFromActorInfo()->GetLocalPlayer();
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+
+	check(Subsystem);
+
+	Subsystem->RemoveMappingContext(TargetLockMappingContext);
+}
+
+void UHeroGameplayAbility_TargetLock::ResetTargetLockMovement()
+{
+	if (CachedDefaultMaxWalkSpeed > 0.f)
+	{
+		GetHeroCharacterFromActorInfo()->GetCharacterMovement()->MaxWalkSpeed = CachedDefaultMaxWalkSpeed;
+	}
+}
+
 void UHeroGameplayAbility_TargetLock::CancelTargetLockAbility()
 {
 	CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
@@ -193,4 +237,5 @@ void UHeroGameplayAbility_TargetLock::CleanUp()
 
 	DrawnTargetLockWidget = nullptr;
 	TargetLockWidgetSize = FVector2D::ZeroVector;
+	CachedDefaultMaxWalkSpeed = 0.f;
 }
