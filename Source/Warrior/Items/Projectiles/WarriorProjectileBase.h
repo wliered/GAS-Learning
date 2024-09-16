@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "GameFramework/Actor.h"
 #include "WarriorProjectileBase.generated.h"
 
@@ -43,7 +45,10 @@ protected:
 	UProjectileMovementComponent* ProjectileMovementComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	EProjectileDamagePolicy ProjectileDamagePolicy = EProjectileDamagePolicy::OnHit;
+	UPROPERTY(BlueprintReadOnly, Category="Projectile", meta = (ExposeOnSpawn = "true"))
+	FGameplayEffectSpecHandle ProjectileDamageEffectSpecHandle;
+	
 
-public:
-
+private:
+	void HandleApplyProjectileDamage (APawn* InHitPawn, const FGameplayEventData& InPayload);
 };
