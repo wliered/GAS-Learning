@@ -58,10 +58,12 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 
 	if (bShouldOverrideRotation)
 	{
-		const FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(
+		FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(
 			GetHeroCharacterFromActorInfo()->GetActorLocation(),
 			CurrentLockedActor->GetActorLocation()
 			);
+
+		LookAtRot -= FRotator(TargetLockCameraZOffset, 0.f, 0.f);
 
 		const FRotator CurrentControlRot = GetHeroControllerFromActorInfo()->GetControlRotation();
 		const FRotator TargetRot = FMath::RInterpTo(CurrentControlRot, LookAtRot, DeltaTime, TargetLockRotationInterpSpeed);
@@ -72,8 +74,33 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 			
 }
 
+void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchDirectionTag)
+{
+	GetAvailableActorsToLock();
+	
+	TArray<AActor*> ActorsOnLeft;
+	TArray<AActor*> ActorsOnRight;
+	AActor* NewTargetToLock = nullptr;
+
+	GetAvialableActorsAroundTarget(ActorsOnLeft, ActorsOnRight);
+
+	if (InSwitchDirectionTag == WarriorGameplayTags::Player_Event_SwitchTarget_Left)
+	{
+		NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnLeft);
+	}
+	else
+	{
+		NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnRight);
+	}
+	if (NewTargetToLock)
+	{
+		CurrentLockedActor = NewTargetToLock;
+	}
+}
+
 void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 {
+	
 	GetAvailableActorsToLock();
 	if (AvailableActorsToTarget.IsEmpty())
 	{
@@ -96,7 +123,8 @@ void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 
 void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 {
-
+	AvailableActorsToTarget.Empty();
+	
 	TArray<FHitResult> BoxTraceHits;
 	
 	UKismetSystemLibrary::BoxTraceMultiForObjects(
@@ -130,6 +158,37 @@ AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(con
 {
 	float ClosestDistance = 0.f;
 	return UGameplayStatics::FindNearestActor(GetHeroCharacterFromActorInfo()->GetActorLocation(), InAvailableActors, ClosestDistance);
+}
+
+void UHeroGameplayAbility_TargetLock::GetAvialableActorsAroundTarget(TArray<AActor*>& OutActorsOnLeft,
+	TArray<AActor*>& OutActorsOnRight)
+{
+	if(!CurrentLockedActor || AvailableActorsToTarget.IsEmpty())
+	{
+		CancelTargetLockAbility();
+		return;
+	}
+
+	const FVector PlayerLocation = GetHeroCharacterFromActorInfo()->GetActorLocation();
+	const FVector PlayerToCurrentNormalized = (CurrentLockedActor->GetActorLocation() - PlayerLocation).GetSafeNormal();
+
+	for (AActor* AvailableActor : AvailableActorsToTarget)
+	{
+		if (!AvailableActor || AvailableActor == CurrentLockedActor) continue;
+		
+		const FVector PlayerToAvailableNormalized = (AvailableActor->GetActorLocation() - PlayerLocation).GetSafeNormal();
+		const FVector CrossResult = FVector::CrossProduct(PlayerToCurrentNormalized, PlayerToAvailableNormalized);
+		
+		if (CrossResult.Z>0.f)
+		{
+			OutActorsOnRight.AddUnique(AvailableActor);
+		}
+		else
+		{
+			OutActorsOnLeft.AddUnique(AvailableActor);
+		}
+		
+	}
 }
 
 void UHeroGameplayAbility_TargetLock::DrawTargetLockWidget()

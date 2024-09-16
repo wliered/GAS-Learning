@@ -24,12 +24,15 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void OnTargetLockTick(float DeltaTime);
-	
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchTarget(const FGameplayTag& InSwitchDirectionTag);
 
 private:
 	void TryLockOnTarget();
 	void GetAvailableActorsToLock();
 	AActor* GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors);
+	void GetAvialableActorsAroundTarget(TArray<AActor*>& OutActorsOnLeft, TArray<AActor*>& OutActorsOnRight);
 	void DrawTargetLockWidget();
 	void SetTargetLockWidgetPoistion();
 	void InitTargetLockMovement();
@@ -49,14 +52,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
 	bool bShowPersistentDebugShape = false;
 	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
-	TSubclassOf<UWarriorWidgeBase> TargetLockWidgetClass; //creates a hard reference of a widget, but this one is simple, small, and frequently used so it is justifiable
+	TSubclassOf<UWarriorWidgeBase> TargetLockWidgetClass; //creates a hard reference of a widget, but this one is simple, small, and frequently used, so it is justifiable
 	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
 	float TargetLockRotationInterpSpeed = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
 	float TargetLockMaxWalkSpeed = 200.f;
 	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
 	UInputMappingContext* TargetLockMappingContext;
-
+	UPROPERTY(EditDefaultsOnly, Category="TargetLock")
+	float TargetLockCameraZOffset = 20.f;
+	
 	UPROPERTY()
 	TArray<AActor*> AvailableActorsToTarget;
 	UPROPERTY()
