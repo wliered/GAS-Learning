@@ -20,7 +20,8 @@ public class Warrior : ModuleRules
 			"GameplayAbilities",
 			"UMG",
 			"AIModule",
-			"MotionWarping"
+			"MotionWarping",
+			"Niagara"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "AnimGraphRuntime" });
