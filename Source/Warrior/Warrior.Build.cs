@@ -21,7 +21,8 @@ public class Warrior : ModuleRules
 			"UMG",
 			"AIModule",
 			"MotionWarping",
-			"Niagara"
+			"Niagara",
+			"NavigationSystem"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "AnimGraphRuntime" });
