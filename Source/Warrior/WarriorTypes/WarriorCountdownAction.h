@@ -24,6 +24,8 @@ public:
 	}
 
 	void CancelAction();
+	virtual void UpdateOperation(FLatentResponse& Response) override;
+	
 private:
 	bool bNeedToCancel;
 	float TotalCountdownTime;

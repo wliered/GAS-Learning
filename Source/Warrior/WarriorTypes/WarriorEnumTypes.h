@@ -41,5 +41,5 @@ enum class EWarriorCountDownActionOutput : uint8
 {
 	Updated,
 	Completed,
-	Canceled
+	Cancelled
 };
