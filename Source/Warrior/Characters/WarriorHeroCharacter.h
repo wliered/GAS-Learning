@@ -59,6 +59,9 @@ private:
 #pragma region Inputs
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
 	UDA_InputConfig* InputConfigDataAsset; // needs to be assigned in editor
+
+	UPROPERTY()
+	FVector2D SwitchDirection = FVector2D::ZeroVector;
 	
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_Look(const FInputActionValue& InputActionValue);
@@ -66,7 +69,7 @@ private:
 	void Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue);
 	void Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue);
 
-	FVector2D SwitchDirection = FVector2D::ZeroVector;
+	void Input_PickupStones_Started(const FInputActionValue& InputActionValue);
 
 	void Input_AbilityInputPresed(FGameplayTag InInputTag);
 	void Input_AbilityInputReleased(FGameplayTag InInputTag);

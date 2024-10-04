@@ -16,6 +16,7 @@ namespace WarriorGameplayTags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_SwitchTarget);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_SpecialWeaponAbility_Light);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_SpecialWeaponAbility_Heavy);
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Pickup_Stones);
 	
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_MustBeHeld);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_MustBeHeld_Block);
@@ -38,6 +39,7 @@ namespace WarriorGameplayTags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Event_SwitchTarget_Right);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Event_ActivateRage);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Event_AOE);
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Event_ConsumeStones);
 	/** Player Tags **/
 
 	/** Player Ability Tags **/
@@ -52,6 +54,7 @@ namespace WarriorGameplayTags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Ability_Rage);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Ability_WeaponSpecial_Light);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Ability_WeaponSpecial_Heavy);
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Ability_Pickup_Stones);
 	/** Ability Tags **/
 
 	/** Player Status Tags **/
