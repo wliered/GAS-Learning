@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Warrior/Characters/WarriorHeroCharacter.h"
+#include "Warrior/Components/PawnComponents/UIComponents/HeroUIComponent.h"
 #include "Warrior/Items/Pickups/WarriorStoneBase.h"
 
 void UHeroGameplayAbility_PickupStones::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -13,6 +14,8 @@ void UHeroGameplayAbility_PickupStones::ActivateAbility(const FGameplayAbilitySp
                                                         const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(true);
 }
 
 void UHeroGameplayAbility_PickupStones::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -20,6 +23,8 @@ void UHeroGameplayAbility_PickupStones::EndAbility(const FGameplayAbilitySpecHan
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(false);
 }
 
 void UHeroGameplayAbility_PickupStones::CollectStones()

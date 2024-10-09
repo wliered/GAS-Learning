@@ -6,6 +6,7 @@
 #include "WarriorGameplayAbility.h"
 #include "WarriorHeroGameplayAbility.generated.h"
 
+class UHeroUIComponent;
 class UHeroCombatComponent;
 class AWarriorHeroController;
 class AWarriorHeroCharacter;
@@ -33,6 +34,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
 	bool GetAbilityRemainingCooldownByTag (FGameplayTag InCooldownTag, float& TotalCooldownTime, float& RemainingCooldownTime);
 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	UHeroUIComponent* GetHeroUIComponentFromActorInfo();
 private:
 
 	TWeakObjectPtr<AWarriorHeroCharacter> CachedWarriorHeroCharacter;

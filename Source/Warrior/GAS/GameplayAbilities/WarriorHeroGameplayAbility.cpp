@@ -69,3 +69,8 @@ bool UWarriorHeroGameplayAbility::GetAbilityRemainingCooldownByTag(FGameplayTag 
 
 	return RemainingCooldownTime > 0.f;
 }
+
+UHeroUIComponent* UWarriorHeroGameplayAbility::GetHeroUIComponentFromActorInfo()
+{
+	return GetHeroCharacterFromActorInfo()->GetHeroUIComponent();
+}
