@@ -73,7 +73,7 @@ private:
 	void OnEnemyDestroyed(AActor* DestroyedActor);
 	
 	UPROPERTY()
-	EWarriorSuvivalGameModeState CurrentSurvivalGameModeState;
+	EWarriorSuvivalGameModeState CurrentSurvivalGameModeState = EWarriorSuvivalGameModeState::WaitSpawnNewWave;
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnSurvivalGameModeStateChanged OnSurvivalGameModeStateChanged;
@@ -102,7 +102,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	float SpawnNewWaveWaitTime = 5.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	float SpawnEnemiesDelayTime = 2.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
@@ -114,4 +114,6 @@ private:
 public:
 	UFUNCTION(BlueprintCallable)
 	void RegisterSpawnedEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister);
+
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 };

@@ -7,6 +7,7 @@
 #include "Engine/AssetManager.h"
 #include "Engine/TargetPoint.h"
 #include "Kismet/GameplayStatics.h"
+#include "Warrior/WarriorFunctionLibrary.h"
 #include "Warrior/Characters/Enemies/WarriorEnemyCharacter.h"
 
 void AWarriorSurvivalGameMode::BeginPlay()
@@ -205,4 +206,16 @@ void AWarriorSurvivalGameMode::RegisterSpawnedEnemies(const TArray<AWarriorEnemy
 			SpawnedEnemy->OnDestroyed.AddUniqueDynamic(this, &ThisClass::OnEnemyDestroyed);
 		}
 	}
+}
+
+void AWarriorSurvivalGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	EWarriorGameDifficulty SavedGameDifficulty;
+	if (UWarriorFunctionLibrary::TryLoadSavedGameDifficulty(SavedGameDifficulty))
+	{
+		CurrentGameDifficulty = SavedGameDifficulty;
+	}
+		
 }

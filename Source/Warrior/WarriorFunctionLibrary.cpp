@@ -5,10 +5,13 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GenericTeamAgentInterface.h"
 #include "WarriorDebugHelper.h"
+#include "WarriorGameInstance.h"
 #include "WarriorGameplaytags.h"
 #include "GAS/AbilitySystemComponents/WarriorAbilitySystemComponent.h"
 #include "Interfaces/PawnCombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "SaveGame/WarriorSaveGame.h"
 #include "WarriorTypes/WarriorCountdownAction.h"
 
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
@@ -178,6 +181,76 @@ void UWarriorFunctionLibrary::CountDown(const UObject* WorldContextObject, float
 			FoundAction->CancelAction();
 		}
 	}
+}
+
+UWarriorGameInstance* UWarriorFunctionLibrary::GetWarriorGameInstance(const UObject* WorldContextObject)
+{
+	if (GEngine)
+	{
+		if(UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+		{
+			return World->GetGameInstance<UWarriorGameInstance>();
+		}
+	}
+	return nullptr;
+}
+
+void UWarriorFunctionLibrary::ToggleInputMode(const UObject* WorldContextObject, EWarriorInputMode InInputMode)
+{
+	APlayerController* PlayerController = nullptr;
+
+	if (GEngine)
+	{
+		if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+		{
+			PlayerController = World->GetFirstPlayerController();
+		}
+
+		if (!PlayerController)
+		{
+			return;
+		}
+
+		FInputModeGameOnly GameOnlyMode;
+		FInputModeUIOnly UIOnlyMode;
+		switch (InInputMode)
+		{
+		case EWarriorInputMode::GameOnly:
+			PlayerController->SetInputMode(GameOnlyMode);
+			PlayerController->bShowMouseCursor = false;
+			break;
+		case EWarriorInputMode::UIOnly:
+			PlayerController->SetInputMode(UIOnlyMode);
+			PlayerController->bShowMouseCursor = true;
+			break;
+		}
+	}
+}
+
+void UWarriorFunctionLibrary::SaveCurrentGameDifficulty(EWarriorGameDifficulty InDifficultyToSave)
+{
+	USaveGame* SaveGameObject = UGameplayStatics::CreateSaveGameObject(UWarriorSaveGame::StaticClass());
+	if (UWarriorSaveGame* WarriorSaveGameObject = Cast<UWarriorSaveGame>(SaveGameObject))
+	{
+		WarriorSaveGameObject->SavedCurrentDifficultyLevel = InDifficultyToSave;
+
+		const bool bWasSaved = UGameplayStatics::SaveGameToSlot(WarriorSaveGameObject, WarriorGameplayTags::GameData_SavedGame_Slot_1.GetTag().ToString(), 0);
+	}
+}
+
+bool UWarriorFunctionLibrary::TryLoadSavedGameDifficulty(EWarriorGameDifficulty& OutSavedDifficulty)
+{
+	if(UGameplayStatics::DoesSaveGameExist(WarriorGameplayTags::GameData_SavedGame_Slot_1.GetTag().ToString(), 0))
+	{
+		USaveGame* SaveGameObject = UGameplayStatics::LoadGameFromSlot(WarriorGameplayTags::GameData_SavedGame_Slot_1.GetTag().ToString(),0);
+		if (UWarriorSaveGame* WarriorSaveGameObject = Cast<UWarriorSaveGame>(SaveGameObject))
+		{
+			OutSavedDifficulty = WarriorSaveGameObject->SavedCurrentDifficultyLevel;
+
+			return true;
+		}
+	}
+	return false;
 }
 
 

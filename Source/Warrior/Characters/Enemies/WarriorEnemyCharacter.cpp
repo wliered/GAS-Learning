@@ -13,6 +13,7 @@
 #include "Warrior/Components/PawnComponents/UIComponents/EnemyUIComponent.h"
 
 #include "Warrior/DataAssets/DataAsset_StartUpDataBase.h"
+#include "Warrior/GameMode/WarriorBaseGameMode.h"
 #include "Warrior/Widgets/WarriorWidgeBase.h"
 
 
@@ -118,14 +119,34 @@ void AWarriorEnemyCharacter::InitEnemyStartupData()
 	{
 		return;
 	}
+	int32 AbilityApplyLevel = 1;
+				
+	if (AWarriorBaseGameMode* BaseGameMode = GetWorld()->GetAuthGameMode<AWarriorBaseGameMode>())
+	{
+		switch (BaseGameMode->GetCurrentGameDifficulty())
+		{
+		case EWarriorGameDifficulty::Easy:
+			AbilityApplyLevel = 1;
+			break;
+		case EWarriorGameDifficulty::Normal:
+			AbilityApplyLevel = 2;
+			break;
+		case EWarriorGameDifficulty::Hard:
+			AbilityApplyLevel = 3;
+			break;
+		case EWarriorGameDifficulty::VeryHard:
+			AbilityApplyLevel = 4;
+			break;
+		}
+	}
 	UAssetManager::GetStreamableManager().RequestAsyncLoad(
 	CharacterStartupData.ToSoftObjectPath(),
 	FStreamableDelegate::CreateLambda(
-		[this]()
+		[this, AbilityApplyLevel]()
 		{
 			if (UDataAsset_StartUpDataBase* LoadedData = CharacterStartupData.Get())
 			{
-				LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
+				LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent, AbilityApplyLevel);
 
 			}
 		}
